@@ -4,7 +4,7 @@
  * Renders a geographic or hex choropleth map of UK parliamentary constituencies.
  * Geographic view uses British National Grid coordinates with d3-geo geoTransform.
  * Hex view uses axial q/r coordinates from bundled data.
- * Both datasets are bundled — no runtime fetching required.
+ * Both datasets are bundled and loaded from lazy chunks when the component mounts.
  */
 
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';

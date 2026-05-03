@@ -2,7 +2,8 @@
  * US Congressional District Choropleth Map
  *
  * Renders a geographic or hex choropleth map of US congressional districts using
- * d3-geo projections (pure SVG). GeoJSON data is bundled — no runtime fetching required.
+ * d3-geo projections (pure SVG). GeoJSON data is bundled and loaded from
+ * lazy chunks when the component mounts.
  * Supports diverging color scales, custom formatting, and state-level zooming.
  */
 

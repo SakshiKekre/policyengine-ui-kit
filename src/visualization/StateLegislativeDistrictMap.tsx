@@ -2,9 +2,9 @@
  * State Legislative District Choropleth Map
  *
  * Renders a geographic choropleth map of state senate or house districts for a
- * single US state using d3-geo projections (pure SVG). GeoJSON data is bundled —
- * no runtime fetching required. Supports diverging color scales, custom formatting,
- * zoom/pan, and SVG download.
+ * single US state using d3-geo projections (pure SVG). GeoJSON data is bundled
+ * and loaded from lazy chunks when the component mounts. Supports diverging
+ * color scales, custom formatting, zoom/pan, and SVG download.
  *
  * Only states where average district population >= 100,000 are supported.
  *
