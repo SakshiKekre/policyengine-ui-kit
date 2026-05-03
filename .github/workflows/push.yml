@@ -38,8 +38,6 @@ jobs:
       - name: Build
         if: steps.check.outputs.count != '0'
         run: bun run build
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Set up Node for npm publish
         if: steps.check.outputs.count != '0'
