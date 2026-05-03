@@ -194,15 +194,27 @@ export function UKConstituencyChoroplethMap({
 
   const [geoData, setGeoData] = useState<GeoJSONFeatureCollection | null>(null);
   const [hexData, setHexData] = useState<UKConstituencyHex | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     Promise.all([
       loadUKConstituenciesGeo(),
       loadUKConstituenciesHex(),
-    ]).then(([geo, hex]) => {
-      setGeoData(geo);
-      setHexData(hex);
-    });
+    ])
+      .then(([geo, hex]) => {
+        if (!isMounted) return;
+        setGeoData(geo);
+        setHexData(hex);
+      })
+      .catch(() => {
+        if (isMounted) setLoadError(true);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const gssToName = useMemo(() => {
@@ -262,6 +274,17 @@ export function UKConstituencyChoroplethMap({
   const handleMouseLeave = useCallback(() => {
     setTooltip(null);
   }, []);
+
+  if (loadError) {
+    return (
+      <div
+        className={cn('flex items-center justify-center', className)}
+        style={{ height: fullConfig.height, ...styles?.root }}
+      >
+        <span className="text-sm text-muted-foreground">Unable to load map data</span>
+      </div>
+    );
+  }
 
   if (!geoData || !hexData) {
     return (

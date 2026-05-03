@@ -126,15 +126,27 @@ export function StateLegislativeDistrictMap({
 
   const [senateGeo, setSenateGeo] = useState<GeoJSONFeatureCollection | null>(null);
   const [houseGeo, setHouseGeo] = useState<GeoJSONFeatureCollection | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     Promise.all([
       loadStateSenateDistrictsGeo(),
       loadStateHouseDistrictsGeo(),
-    ]).then(([senate, house]) => {
-      setSenateGeo(senate);
-      setHouseGeo(house);
-    });
+    ])
+      .then(([senate, house]) => {
+        if (!isMounted) return;
+        setSenateGeo(senate);
+        setHouseGeo(house);
+      })
+      .catch(() => {
+        if (isMounted) setLoadError(true);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const fullConfig = useMemo(
@@ -194,6 +206,17 @@ export function StateLegislativeDistrictMap({
   const handleMouseLeave = useCallback(() => {
     setTooltip(null);
   }, []);
+
+  if (loadError) {
+    return (
+      <div
+        className={cn('flex items-center justify-center', className)}
+        style={{ height: fullConfig.height, ...styles?.root }}
+      >
+        <span className="text-sm text-muted-foreground">Unable to load map data</span>
+      </div>
+    );
+  }
 
   if (!senateGeo || !houseGeo) {
     return (

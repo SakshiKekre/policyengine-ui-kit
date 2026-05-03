@@ -125,12 +125,25 @@ export function USDistrictChoroplethMap({
   const isHexMap = visualizationType === 'hex';
 
   const [geoData, setGeoData] = useState<Record<MapVisualizationType, GeoJSONFeatureCollection> | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     Promise.all([
       loadCongressionalDistrictsGeo(),
       loadCongressionalDistrictsHex(),
-    ]).then(([geo, hex]) => setGeoData({ geographic: geo, hex }));
+    ])
+      .then(([geo, hex]) => {
+        if (isMounted) setGeoData({ geographic: geo, hex });
+      })
+      .catch(() => {
+        if (isMounted) setLoadError(true);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const geoJSON = geoData?.[visualizationType] ?? null;
@@ -207,6 +220,17 @@ export function USDistrictChoroplethMap({
   const handleMouseLeave = useCallback(() => {
     setTooltip(null);
   }, []);
+
+  if (loadError) {
+    return (
+      <div
+        className={cn('flex items-center justify-center', className)}
+        style={{ height: fullConfig.height, ...styles?.root }}
+      >
+        <span className="text-sm text-muted-foreground">Unable to load map data</span>
+      </div>
+    );
+  }
 
   if (!geoData) {
     return (
